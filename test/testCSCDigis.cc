@@ -1,7 +1,6 @@
-/**\testCSCDigis.cc
+/**\testCSCWireDigis.cc to be copied to testCSCDigis.cc before compiling
  *
  * Test suit for CSCWireDigis.
- * Based on DTDigi
  *
  * $Date$
  * $Revision$
@@ -17,15 +16,13 @@ static const char CVSId[] = "$Id$";
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
 
+#include <stdio.h>
 
 class testCSCDigis: public CppUnit::TestFixture {
 
   CPPUNIT_TEST_SUITE(testCSCDigis);
-
   CPPUNIT_TEST(testDigiPacking);
-  CPPUNIT_TEST(testDigiCollectionInsert);
   CPPUNIT_TEST(testDigiCollectionPut);
-
   CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -34,96 +31,75 @@ public:
   void setUp(){}
   void tearDown(){}  
   void testDigiPacking();
-  void testDigiCollectionInsert();
   void testDigiCollectionPut();
 }; 
 
 ///registration of the test so that the runner can find it
 CPPUNIT_TEST_SUITE_REGISTRATION(testCSCDigis);
 
-
 void testCSCDigis::testDigiPacking(){
   CPPUNIT_ASSERT (sizeof(CSCWireDigi::PersistentPacking)==sizeof(CSCWireDigi::PackedDigiType));
   CPPUNIT_ASSERT(sizeof(CSCWireDigi::ChannelPacking)==sizeof(int));
+  printf("\n");
+  printf("I'm in testDigiPacking()   \n");
 }
 
 
 void testCSCDigis::testDigiCollectionPut(){
 
-  CSCDetId layer(2,7,8,1,244);
+  printf("\n");
+  printf("I'm in testDigiCollectionPut() \n");
 
-  CSCWireDigiCollection digiCollection;
+// Filling collection
 
-  std::vector<CSCWireDigi> digivec;
-  for (int i=0; i<10; ++i){
-    CSCWireDigi::PackedDigiType pd;
-    pd.wire=1+i;
-    pd.tbin=5;
+       CSCWireDigiCollection digiCollection;
 
-    CSCWireDigi digi(pd);
-    digivec.push_back(digi);
-  }
+  for(int endcp=1; endcp<3; endcp++)
+   for(int stn=1; stn<5; stn++)
+    for(int rng=1; rng<4; rng++)
+     for(int csc=1; csc<37; csc++)
+      for(int pln=1; pln<7; pln++) {
 
-  digiCollection.put(std::make_pair(digivec.begin(), digivec.end()),layer);
-    
-  CSCWireDigiCollection::DigiRangeIterator detUnitIt;
-  for (detUnitIt=digiCollection.begin();
-       detUnitIt!=digiCollection.end();
-       ++detUnitIt){
+       CSCDetId cscdetid(endcp,stn,rng,csc,pln);
 
-    int i=0;
-    for (CSCWireDigiCollection::const_iterator digiIt = 
-	  detUnitIt->second.first;
-	  digiIt!=detUnitIt->second.second;
-	 ++digiIt){
+       std::vector<CSCWireDigi> digivec;
+       for (int i=10; i<11; ++i){
+           CSCWireDigi::PackedDigiType pd;
+           pd.wire=i;
+           pd.tbin=5;
 
-      
+           CSCWireDigi digi(pd);
+           digivec.push_back(digi);
+        }
 
-      CPPUNIT_ASSERT((*digiIt).getWireGroup()==1+i);
-      CPPUNIT_ASSERT((*digiIt).getBeamCrossingTag()==5);
-      i++;
-      
-    }// for digis in layer
-   }// for layers
+        digiCollection.put(std::make_pair(digivec.begin(), digivec.end()),cscdetid);
 
-}
-
-void testCSCDigis::testDigiCollectionInsert(){
-
-  CSCWireDigi::PackedDigiType pd;
-  pd.wire=1;
-  pd.tbin=4;
+      } // end of for(int endcp=1 ...for(int pln=1 ...) {
 
 
-  CSCWireDigi digi(pd);
+// Reading collection back
 
+        int count1=0;
+        CSCWireDigiCollection::DigiRangeIterator detUnitIt;
+        for (detUnitIt=digiCollection.begin();
+             detUnitIt!=digiCollection.end();
+           ++detUnitIt){
 
-  CSCDetId layer(2,7,8,1,244);
+           const CSCDetId& id = (*detUnitIt).first;
 
-  CSCWireDigiCollection digiCollection;
+           const CSCWireDigiCollection::Range& range = (*detUnitIt).second;
+           for (CSCWireDigiCollection::const_iterator digiIt = 
+	        range.first; digiIt!=range.second;
+	      ++digiIt){
 
-  digiCollection.insertDigi(layer,digi);
-
-  //  CSCWireDigiCollection::DetUnitIds layers = digiCollection.layers();
-
-//   for (CSCWireDigiCollection::DetUnitIds::const_iterator layerIt = layers.begin();
-//        layerIt!= layers.end(); ++layerIt){
-
-  CSCWireDigiCollection::DigiRangeIterator detUnitIt;
-  for (detUnitIt=digiCollection.begin();
-       detUnitIt!=digiCollection.end();
-       ++detUnitIt){
-
-    for (CSCWireDigiCollection::const_iterator digiIt =
-          detUnitIt->second.first;
-          digiIt!=detUnitIt->second.second;
-         ++digiIt){
-
-
-      CPPUNIT_ASSERT((*digiIt).getWireGroup()==1);
-      CPPUNIT_ASSERT((*digiIt).getBeamCrossingTag()==4);
-
+              count1++;
+              CPPUNIT_ASSERT((*digiIt).getWireGroup()==10);
+              CPPUNIT_ASSERT((*digiIt).getBeamCrossingTag()==5);
+ printf("endcap station ring csc plane wire tbin: %3d %3d %3d %3d %3d %3d  %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getWireGroup(),(*digiIt).getBeamCrossingTag());
 
     }// for digis in layer
-   }// for layers
+   }// end of for (detUnitIt=...
+
+    printf("count1:  %3d \n", count1);
 }
+
