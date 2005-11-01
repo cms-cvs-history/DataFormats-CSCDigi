@@ -1,15 +1,16 @@
 /**\testCSCWireDigis.cc to be copied to testCSCDigis.cc before compiling
  *
  * Test suit for CSCWireDigis.
+ * Based on testDTDigis.cc
  *
- * $Date$
- * $Revision$
+ * $Date: 2005/11/01 20:33:56 $
+ * $Revision: 1.1 $
  *
  * \author N. Terentiev, CMU
  */
 
 
-static const char CVSId[] = "$Id$";
+static const char CVSId[] = "$Id: testCSCWireDigis.cc,v 1.1 2005/11/01 20:33:56 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
