@@ -3,15 +3,15 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date$
- * $Revision$
+ * $Date: 2005/12/07 23:33:36 $
+ * $Revision: 1.4 $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi and CSCRPCDigi)
  * \author M.Schmitt,    Northwestern (for CSCComparatorDigi and CSCStripDigi)
  */
 
 
-static const char CVSId[] = "$Id$";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.4 2005/12/07 23:33:36 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -280,8 +280,7 @@ void testCSCDigis::readCSCRPCDigi(CSCRPCDigiCollection & collection){
  
            const RPCDetId& id = (*detUnitIt).first;
  
-           const CSCRPCDigiCollection::Range& range = 
-(*detUnitIt).second;
+           const CSCRPCDigiCollection::Range& range = (*detUnitIt).second;
            for (CSCRPCDigiCollection::const_iterator digiIt =
                 range.first; digiIt!=range.second;
               ++digiIt){
