@@ -6,12 +6,13 @@
  * $Date$
  * $Revision$
  *
- * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, CSCALCTDigi)
- * \author M.Schmitt,    Northwestern (for CSCComparatorDigi and CSCStripDigi)
+ * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
+ *                                CSCALCTDigi, CSCCLCTDigi)
+ * \author M.Schmitt,    Northwestern (for CSCComparatorDigi, CSCStripDigi)
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.5 2005/12/07 23:54:43 teren Exp $";
+static const char CVSId[] = "$Id$";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -31,6 +32,9 @@ static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.5 2005/12/07 23:54:43 tere
 
 #include <DataFormats/CSCDigi/interface/CSCALCTDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCALCTDigiCollection.h>
+
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigi.h>
+#include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 
 #include <stdio.h>
 
@@ -52,12 +56,14 @@ public:
   void fillCSCStripDigi(CSCStripDigiCollection &);
   void fillCSCRPCDigi(CSCRPCDigiCollection &);
   void fillCSCALCTDigi(CSCALCTDigiCollection &);
+  void fillCSCCLCTDigi(CSCCLCTDigiCollection &);
 
   void readCSCWireDigi(CSCWireDigiCollection &);
   void readCSCComparatorDigi(CSCComparatorDigiCollection &);
   void readCSCStripDigi(CSCStripDigiCollection &);
   void readCSCRPCDigi(CSCRPCDigiCollection &);
   void readCSCALCTDigi(CSCALCTDigiCollection &);
+  void readCSCCLCTDigi(CSCCLCTDigiCollection &);
 
   void testDigiCollectionPut();
 }; 
@@ -82,6 +88,9 @@ sizeof(CSCRPCDigi::PackedDigiType));
 
   CPPUNIT_ASSERT (sizeof(CSCALCTDigi::PersistentPacking)==sizeof(CSCALCTDigi::PackedDigiType));
   CPPUNIT_ASSERT(sizeof(CSCALCTDigi::ChannelPacking)==sizeof(int));
+
+  CPPUNIT_ASSERT (sizeof(CSCCLCTDigi::PersistentPacking)==sizeof(CSCCLCTDigi::PackedDigiType));
+  CPPUNIT_ASSERT(sizeof(CSCCLCTDigi::ChannelPacking)==sizeof(int));
 }
 
 void testCSCDigis::fillCSCWireDigi(CSCWireDigiCollection & collection){
@@ -225,6 +234,37 @@ void testCSCDigis::fillCSCALCTDigi(CSCALCTDigiCollection & collection){
       } // end of for(int endcp=1 ...for(int pln=1 ...)
 }
 
+void testCSCDigis::fillCSCCLCTDigi(CSCCLCTDigiCollection & collection){
+  
+  for(int endcp=1; endcp<3; endcp++)
+   for(int stn=1; stn<5; stn++)
+    for(int rng=1; rng<4; rng++)
+     for(int csc=1; csc<37; csc++)
+      for(int pln=3; pln<4; pln++) {  // CLCT primitives are for layer 3 only
+    
+       CSCDetId detid(endcp,stn,rng,csc,pln);
+                                                                                
+       std::vector<CSCCLCTDigi> digivec;
+       for (int i=1; i<3; ++i){
+           CSCCLCTDigi::PackedDigiType pd;
+           pd.trknmb=1;
+           pd.pattern=2;
+           pd.quality=3;
+           pd.bend=0;
+           pd.striptype=0;
+           pd.strip=16;
+           pd.bx=4;
+ 
+           CSCCLCTDigi digi(pd);
+           digivec.push_back(digi);
+        }
+         
+        
+collection.put(std::make_pair(digivec.begin(),digivec.end()),detid);
+ 
+      } // end of for(int endcp=1 ...for(int pln=1 ...)
+}
+
 void testCSCDigis::readCSCWireDigi(CSCWireDigiCollection & collection){
 
         int count=0;
@@ -259,7 +299,7 @@ void testCSCDigis::readCSCComparatorDigi(CSCComparatorDigiCollection & collectio
        ++detUnitIt){
  
     const CSCDetId& id = (*detUnitIt).first;
-                                                                                                                    
+
     const CSCComparatorDigiCollection::Range& range = (*detUnitIt).second;
     for (CSCComparatorDigiCollection::const_iterator digiIt =
            range.first; digiIt!=range.second; ++digiIt){
@@ -363,6 +403,37 @@ void testCSCDigis::readCSCALCTDigi(CSCALCTDigiCollection & collection){
     printf("CSC ALCT count:  %3d \n", count);
 }
 
+void testCSCDigis::readCSCCLCTDigi(CSCCLCTDigiCollection & collection){
+  
+        int count=0;
+        CSCCLCTDigiCollection::DigiRangeIterator detUnitIt;
+        for (detUnitIt=collection.begin();
+             detUnitIt!=collection.end();
+           ++detUnitIt){
+    
+           const CSCDetId& id = (*detUnitIt).first;
+                                                                                
+           const CSCCLCTDigiCollection::Range& range =(*detUnitIt).second;
+           for (CSCCLCTDigiCollection::const_iterator digiIt =
+                range.first; digiIt!=range.second;
+              ++digiIt){
+    
+              count++;
+              CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
+              CPPUNIT_ASSERT((*digiIt).getPattern()==2);
+              CPPUNIT_ASSERT((*digiIt).getQuality()==3);
+              CPPUNIT_ASSERT((*digiIt).getBend()==0);
+              CPPUNIT_ASSERT((*digiIt).getStriptype()==0);
+              CPPUNIT_ASSERT((*digiIt).getStrip()==16);              
+              CPPUNIT_ASSERT((*digiIt).getBx()==4);
+
+ printf("CSC CLCT - endcap station ring csc plane track pattern quality bend striptype strip bx %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getTrknmb(),(*digiIt).getPattern(),(*digiIt).getQuality(),(*digiIt).getBend(),(*digiIt).getStriptype(),(*digiIt).getStrip(),(*digiIt).getBx());
+    
+    }// for digis in layer
+   }// end of for (detUnitIt=...
+    printf("CSC CLCT count:  %3d \n", count);
+}
+
 void testCSCDigis::testDigiCollectionPut(){
 
 /************           Filling collections             *****************/
@@ -383,6 +454,8 @@ void testCSCDigis::testDigiCollectionPut(){
        CSCALCTDigiCollection alctdigiCollection;
        fillCSCALCTDigi(alctdigiCollection);
 
+       CSCCLCTDigiCollection clctdigiCollection;
+       fillCSCCLCTDigi(clctdigiCollection);
 
 /************           Reading collections             *****************/
 
@@ -391,4 +464,5 @@ void testCSCDigis::testDigiCollectionPut(){
        readCSCStripDigi(stripdigiCollection);
        readCSCRPCDigi(rpcdigiCollection);
        readCSCALCTDigi(alctdigiCollection);
+       readCSCCLCTDigi(clctdigiCollection);
 }
