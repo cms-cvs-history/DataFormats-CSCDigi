@@ -12,7 +12,7 @@
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.7 2005/12/09 21:09:29 teren Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.8 2006/02/25 04:00:32 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -249,13 +249,16 @@ void testCSCDigis::fillCSCCLCTDigi(CSCCLCTDigiCollection & collection){
        std::vector<CSCCLCTDigi> digivec;
        for (int i=1; i<3; ++i){
            CSCCLCTDigi::PackedDigiType pd;
-           pd.trknmb=1;
-           pd.pattern=2;
+
+           pd.valid=1;
            pd.quality=3;
+           pd.patshape=2;
+           pd.striptype=1;
            pd.bend=0;
-           pd.striptype=0;
            pd.strip=16;
-           pd.bx=4;
+           pd.cfeb=5;
+           pd.bx=3;
+           pd.trknmb=1;
  
            CSCCLCTDigi digi(pd);
            digivec.push_back(digi);
@@ -422,15 +425,17 @@ void testCSCDigis::readCSCCLCTDigi(CSCCLCTDigiCollection & collection){
               ++digiIt){
     
               count++;
-              CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
-              CPPUNIT_ASSERT((*digiIt).getPattern()==2);
+              CPPUNIT_ASSERT((*digiIt).getValid()==1);
               CPPUNIT_ASSERT((*digiIt).getQuality()==3);
+              CPPUNIT_ASSERT((*digiIt).getPattern()==2);
+              CPPUNIT_ASSERT((*digiIt).getStriptype()==1);
               CPPUNIT_ASSERT((*digiIt).getBend()==0);
-              CPPUNIT_ASSERT((*digiIt).getStriptype()==0);
-              CPPUNIT_ASSERT((*digiIt).getStrip()==16);              
-              CPPUNIT_ASSERT((*digiIt).getBx()==4);
+              CPPUNIT_ASSERT((*digiIt).getStrip()==16);
+              CPPUNIT_ASSERT((*digiIt).getCfeb()==5);              
+              CPPUNIT_ASSERT((*digiIt).getBx()==3);
+              CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
 
- printf("CSC CLCT - endcap station ring csc plane track pattern quality bend striptype strip bx %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getTrknmb(),(*digiIt).getPattern(),(*digiIt).getQuality(),(*digiIt).getBend(),(*digiIt).getStriptype(),(*digiIt).getStrip(),(*digiIt).getBx());
+ printf("CSC CLCT - endcap station ring csc plane valid quality pattern striptype bend strip cfeb bx tracknmb %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getValid(),(*digiIt).getQuality(),(*digiIt).getPattern(),(*digiIt).getStriptype(),(*digiIt).getBend(),(*digiIt).getStrip(),(*digiIt).getCfeb(),(*digiIt).getBx(), (*digiIt).getTrknmb());
     
     }// for digis in layer
    }// end of for (detUnitIt=...
