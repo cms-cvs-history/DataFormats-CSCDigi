@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date$
- * $Revision$
+ * $Date:$
+ * $Revision:$
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  */
 
 
-static const char CVSId[] = "$Id$";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.7 2005/12/09 21:09:29 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -218,12 +218,14 @@ void testCSCDigis::fillCSCALCTDigi(CSCALCTDigiCollection & collection){
        std::vector<CSCALCTDigi> digivec;
        for (int i=1; i<3; ++i){
            CSCALCTDigi::PackedDigiType pd;
-           pd.trknmb=1;
+
+           pd.valid=1;
+           pd.quality=3;
+           pd.accel=0;
+           pd.pattern=1;
            pd.keywire=16;
            pd.bx=4;
-           pd.quality=3;
-           pd.pattern=2;
-           pd.valid=0;
+           pd.trknmb=1;
 
            CSCALCTDigi digi(pd);
            digivec.push_back(digi);
@@ -390,14 +392,15 @@ void testCSCDigis::readCSCALCTDigi(CSCALCTDigiCollection & collection){
               ++digiIt){
    
               count++;
-              CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
+              CPPUNIT_ASSERT((*digiIt).getValid()==1);
+              CPPUNIT_ASSERT((*digiIt).getQuality()==3);
+              CPPUNIT_ASSERT((*digiIt).getAccel()==0);
+              CPPUNIT_ASSERT((*digiIt).getPattern()==1);
               CPPUNIT_ASSERT((*digiIt).getKwire()==16);
               CPPUNIT_ASSERT((*digiIt).getBx()==4);
-              CPPUNIT_ASSERT((*digiIt).getQuality()==3);
-              CPPUNIT_ASSERT((*digiIt).getPattern()==2);
-              CPPUNIT_ASSERT((*digiIt).getValid()==0);
- printf("CSC ALCT - endcap station ring csc plane track wire bx quality pattern valid: %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getTrknmb(),(*digiIt).getKwire(),(*digiIt).getBx(),(*digiIt).getQuality(),(*digiIt).getPattern(),(*digiIt).getValid());
-   
+              CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
+
+ printf("CSC ALCT - endcap station ring csc plane valid quality accel pattern wire bx track: %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getValid(),(*digiIt).getQuality(),(*digiIt).getAccel(),(*digiIt).getPattern(),(*digiIt).getKwire(),(*digiIt).getBx(),(*digiIt).getTrknmb());
     }// for digis in layer
    }// end of for (detUnitIt=...
     printf("CSC ALCT count:  %3d \n", count);
