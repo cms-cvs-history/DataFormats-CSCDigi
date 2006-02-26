@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date:$
- * $Revision:$
+ * $Date: 2006/02/25 20:52:56 $
+ * $Revision: 1.9 $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.8 2006/02/25 04:00:32 teren Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.9 2006/02/25 20:52:56 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -36,6 +36,9 @@ static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.8 2006/02/25 04:00:32 tere
 #include <DataFormats/CSCDigi/interface/CSCCLCTDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCCLCTDigiCollection.h>
 
+#include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigi.h>
+#include <DataFormats/CSCDigi/interface/CSCCorrelatedLCTDigiCollection.h>
+
 #include <stdio.h>
 
 class testCSCDigis: public CppUnit::TestFixture {
@@ -57,6 +60,7 @@ public:
   void fillCSCRPCDigi(CSCRPCDigiCollection &);
   void fillCSCALCTDigi(CSCALCTDigiCollection &);
   void fillCSCCLCTDigi(CSCCLCTDigiCollection &);
+  void fillCSCCorrLCTDigi(CSCCorrelatedLCTDigiCollection &);
 
   void readCSCWireDigi(CSCWireDigiCollection &);
   void readCSCComparatorDigi(CSCComparatorDigiCollection &);
@@ -64,6 +68,7 @@ public:
   void readCSCRPCDigi(CSCRPCDigiCollection &);
   void readCSCALCTDigi(CSCALCTDigiCollection &);
   void readCSCCLCTDigi(CSCCLCTDigiCollection &);
+  void readCSCCorrLCTDigi(CSCCorrelatedLCTDigiCollection &);
 
   void testDigiCollectionPut();
 }; 
@@ -83,7 +88,7 @@ void testCSCDigis::testDigiPacking(){
 //  CPPUNIT_ASSERT(sizeof(CSCStripDigi::ChannelPacking)==sizeof(int));
 
   CPPUNIT_ASSERT (sizeof(CSCRPCDigi::PersistentPacking)==
-sizeof(CSCRPCDigi::PackedDigiType));
+		  sizeof(CSCRPCDigi::PackedDigiType));
   CPPUNIT_ASSERT(sizeof(CSCRPCDigi::ChannelPacking)==sizeof(int));
 
   CPPUNIT_ASSERT (sizeof(CSCALCTDigi::PersistentPacking)==sizeof(CSCALCTDigi::PackedDigiType));
@@ -268,6 +273,69 @@ void testCSCDigis::fillCSCCLCTDigi(CSCCLCTDigiCollection & collection){
 collection.put(std::make_pair(digivec.begin(),digivec.end()),detid);
  
       } // end of for(int endcp=1 ...for(int pln=1 ...)
+}
+
+void testCSCDigis::fillCSCCorrLCTDigi(CSCCorrelatedLCTDigiCollection & collection)
+{
+  for(int endcap = 1; endcap <=2; ++endcap)
+    for(int station = 1; station <=4; ++station)
+      for(int ring = 1; ring <= ((station == 1) ? 3 : 2); ++ring)
+	for(int chamber = 1; chamber <= ((ring == 1 && station != 1) ? 18 : 36); ++chamber)
+	  for(int layer = 3; layer <=3; ++layer)
+	    {
+	      CSCDetId detid(endcap,station,ring,chamber,layer);
+	      std::vector<CSCCorrelatedLCTDigi> digivec;
+
+	      for(int trknmb = 1; trknmb <=2 ; ++trknmb)
+		{
+		  CSCCorrelatedLCTDigi::PackedDigiType pd;
+		  
+		  pd.trknmb = trknmb;
+		  pd.valid = 1;
+		  pd.quality = 15;
+		  pd.pattern = 2;
+		  pd.strip = 16;
+		  pd.keywire = 10;
+		  pd.bend = 1;
+		  pd.bx = 0;
+
+		  CSCCorrelatedLCTDigi digi(pd);
+		  digivec.push_back(digi);
+		}
+	      collection.put(std::make_pair(digivec.begin(),digivec.end()),detid);
+	    }
+}
+
+void testCSCDigis::readCSCCorrLCTDigi(CSCCorrelatedLCTDigiCollection & collection)
+{
+  int count = 0;
+  CSCCorrelatedLCTDigiCollection::DigiRangeIterator detUnitIt;
+
+  for(detUnitIt = collection.begin() ; detUnitIt != collection.end();
+      detUnitIt++)
+    {
+      const CSCDetId& id = (*detUnitIt).first;
+
+      const CSCCorrelatedLCTDigiCollection::Range& range = (*detUnitIt).second;
+
+      for(CSCCorrelatedLCTDigiCollection::const_iterator digiIt = range.first;
+	  digiIt != range.second; digiIt++)
+	{
+	  ++count;
+	  CPPUNIT_ASSERT(digiIt->getValid() == 1);
+	  CPPUNIT_ASSERT(digiIt->getQuality() == 15);
+	  CPPUNIT_ASSERT(digiIt->getCLCTPattern() == 2);
+	  CPPUNIT_ASSERT(digiIt->getStrip() == 16);
+	  CPPUNIT_ASSERT(digiIt->getKwire() == 10);
+	  CPPUNIT_ASSERT(digiIt->getBend() == 1);
+	  CPPUNIT_ASSERT(digiIt->getBx() == 0);
+	  
+	  std::cout << "CSC Correlated LCT - endcap station ring csc layer LCT# Quality: " << id.endcap() << " " << id.station()
+		    << " " << id.ring() << " " << id.chamber() << " " << id.layer() << " " << digiIt->getTrknmb() << " " 
+		    << digiIt->getQuality() << std::endl;
+	}
+    }
+  std::cout << "CSC Correlated LCT Digi count - " << count << std::endl;
 }
 
 void testCSCDigis::readCSCWireDigi(CSCWireDigiCollection & collection){
@@ -465,6 +533,9 @@ void testCSCDigis::testDigiCollectionPut(){
        CSCCLCTDigiCollection clctdigiCollection;
        fillCSCCLCTDigi(clctdigiCollection);
 
+       CSCCorrelatedLCTDigiCollection corrlctdigiCollection;
+       fillCSCCorrLCTDigi(corrlctdigiCollection);
+
 /************           Reading collections             *****************/
 
        readCSCWireDigi(wiredigiCollection);
@@ -473,4 +544,5 @@ void testCSCDigis::testDigiCollectionPut(){
        readCSCRPCDigi(rpcdigiCollection);
        readCSCALCTDigi(alctdigiCollection);
        readCSCCLCTDigi(clctdigiCollection);
+       readCSCCorrLCTDigi(corrlctdigiCollection);
 }
