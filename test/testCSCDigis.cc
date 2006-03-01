@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date: 2006/02/25 20:52:56 $
- * $Revision: 1.9 $
+ * $Date: 2006/02/26 21:27:12 $
+ * $Revision: 1.10 $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.9 2006/02/25 20:52:56 teren Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.10 2006/02/26 21:27:12 lgray Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -89,7 +89,6 @@ void testCSCDigis::testDigiPacking(){
 
   CPPUNIT_ASSERT (sizeof(CSCRPCDigi::PersistentPacking)==
 		  sizeof(CSCRPCDigi::PackedDigiType));
-  CPPUNIT_ASSERT(sizeof(CSCRPCDigi::ChannelPacking)==sizeof(int));
 
   CPPUNIT_ASSERT (sizeof(CSCALCTDigi::PersistentPacking)==sizeof(CSCALCTDigi::PackedDigiType));
   CPPUNIT_ASSERT(sizeof(CSCALCTDigi::ChannelPacking)==sizeof(int));
@@ -184,7 +183,9 @@ void testCSCDigis::fillCSCStripDigi(CSCStripDigiCollection & collection){
 }
 
 void testCSCDigis::fillCSCRPCDigi(CSCRPCDigiCollection & collection){
-
+  ///rpc digis need to be tested differently using 
+  ///CSCDetIDs and CSC relevant RAT readout
+  ///A.T.
   for(int region=1; region<2; region++)
    for(int rng=1; rng<2; rng++)
     for(int stn=1; stn<2; stn++)
@@ -194,11 +195,12 @@ void testCSCDigis::fillCSCRPCDigi(CSCRPCDigiCollection & collection){
         for(int roll=1; roll<2; roll++)
                                                {
        RPCDetId detid(region,rng,stn,sct,layer,subsct,roll);
-                                                                                
        std::vector<CSCRPCDigi> digivec;
        for (int i=10; i<11; ++i){
            CSCRPCDigi::PackedDigiType pd;
-           pd.strip=i;
+           pd.rpc=i;
+           pd.bxn=1;
+           pd.pad=1;
            pd.tbin=3;
  
            CSCRPCDigi digi(pd);
@@ -437,9 +439,9 @@ void testCSCDigis::readCSCRPCDigi(CSCRPCDigiCollection & collection){
               ++digiIt){
  
               count++;
-              CPPUNIT_ASSERT((*digiIt).getStrip()==10);
-              CPPUNIT_ASSERT((*digiIt).getBx()==3);
- printf("RPC - region ring station sector layer subsector roll strip tbin: %3d %3d %3d %3d %3d %3d %3d %3d %3d\n",id.region(),id.ring(),id.station(),id.sector(),id.layer(),id.subsector(),id.roll(),(*digiIt).getStrip(),(*digiIt).getBx());
+              CPPUNIT_ASSERT((*digiIt).getRpc()==3);
+              CPPUNIT_ASSERT((*digiIt).getBXN()==4);
+ printf("RPC - region ring station sector layer subsector roll strip tbin: %3d %3d %3d %3d %3d %3d %3d %3d %3d\n",id.region(),id.ring(),id.station(),id.sector(),id.layer(),id.subsector(),id.roll(),(*digiIt).getRpc(),(*digiIt).getBXN());
  
     }// for digis in layer
    }// end of for (detUnitIt=...
