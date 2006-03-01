@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date: 2006/02/26 21:27:12 $
- * $Revision: 1.10 $
+ * $Date: 2006/03/01 09:40:39 $
+ * $Revision: 1.11 $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,11 +12,10 @@
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.10 2006/02/26 21:27:12 lgray Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.11 2006/03/01 09:40:39 tumanov Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
-#include <DataFormats/MuonDetId/interface/RPCDetId.h>
 
 #include <DataFormats/CSCDigi/interface/CSCWireDigi.h>
 #include <DataFormats/CSCDigi/interface/CSCWireDigiCollection.h>
@@ -183,33 +182,32 @@ void testCSCDigis::fillCSCStripDigi(CSCStripDigiCollection & collection){
 }
 
 void testCSCDigis::fillCSCRPCDigi(CSCRPCDigiCollection & collection){
-  ///rpc digis need to be tested differently using 
-  ///CSCDetIDs and CSC relevant RAT readout
-  ///A.T.
-  for(int region=1; region<2; region++)
-   for(int rng=1; rng<2; rng++)
-    for(int stn=1; stn<2; stn++)
-     for(int sct=1; sct<2; sct++)
-      for(int layer=1; layer<2; layer++)
-       for(int subsct=1; subsct<2; subsct++)
-        for(int roll=1; roll<2; roll++)
-                                               {
-       RPCDetId detid(region,rng,stn,sct,layer,subsct,roll);
-       std::vector<CSCRPCDigi> digivec;
-       for (int i=10; i<11; ++i){
-           CSCRPCDigi::PackedDigiType pd;
-           pd.rpc=i;
-           pd.bxn=1;
-           pd.pad=1;
-           pd.tbin=3;
+  ///rpc digis need to be tested using 
+  ///CSCDetIDs and CSC relevant RAT readout A.T.
+
+  for(int endcp=1; endcp<3; endcp++)
+    for(int stn=1; stn<5; stn++)
+      for(int rng=1; rng<4; rng++)
+	for(int csc=1; csc<37; csc++)
+	  for(int pln=3; pln<4; pln++) {  // ALCT primitives are for layer 3 only
+   
+	    CSCDetId detid(endcp,stn,rng,csc,pln);
+   
+	    std::vector<CSCRPCDigi> digivec;
+	    for (int i=10; i<11; ++i){
+	      CSCRPCDigi::PackedDigiType pd;
+	      pd.rpc=i;
+	      pd.bxn=1;
+	      pd.pad=1;
+	      pd.tbin=3;
  
-           CSCRPCDigi digi(pd);
-           digivec.push_back(digi);
-        }
+	      CSCRPCDigi digi(pd);
+	      digivec.push_back(digi);
+	    }
  
-        collection.put(std::make_pair(digivec.begin(),digivec.end()),detid);
- 
-      } // end of for(int region=1 ...for(int roll=1 ...) 
+	    collection.put(std::make_pair(digivec.begin(),digivec.end()),detid);
+	  }
+
 }
 
 void testCSCDigis::fillCSCALCTDigi(CSCALCTDigiCollection & collection){
@@ -431,7 +429,7 @@ void testCSCDigis::readCSCRPCDigi(CSCRPCDigiCollection & collection){
              detUnitIt!=collection.end();
            ++detUnitIt){
  
-           const RPCDetId& id = (*detUnitIt).first;
+           const CSCDetId& id = (*detUnitIt).first;
  
            const CSCRPCDigiCollection::Range& range = (*detUnitIt).second;
            for (CSCRPCDigiCollection::const_iterator digiIt =
@@ -441,8 +439,10 @@ void testCSCDigis::readCSCRPCDigi(CSCRPCDigiCollection & collection){
               count++;
               CPPUNIT_ASSERT((*digiIt).getRpc()==3);
               CPPUNIT_ASSERT((*digiIt).getBXN()==4);
- printf("RPC - region ring station sector layer subsector roll strip tbin: %3d %3d %3d %3d %3d %3d %3d %3d %3d\n",id.region(),id.ring(),id.station(),id.sector(),id.layer(),id.subsector(),id.roll(),(*digiIt).getRpc(),(*digiIt).getBXN());
- 
+
+	      printf("RPC digi - endcap station ring csc plane: %3d %3d %3d %3d %3d %3d  %4d \n",
+		     id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getRpc(),(*digiIt).getBXN());
+   
     }// for digis in layer
    }// end of for (detUnitIt=...
  
