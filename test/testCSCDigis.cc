@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date: 2006/03/01 09:40:39 $
- * $Revision: 1.11 $
+ * $Date:$
+ * $Revision:$
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  */
 
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.11 2006/03/01 09:40:39 tumanov Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.12 2006/03/01 13:26:54 tumanov Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -465,15 +465,15 @@ void testCSCDigis::readCSCALCTDigi(CSCALCTDigiCollection & collection){
               ++digiIt){
    
               count++;
-              CPPUNIT_ASSERT((*digiIt).getValid()==1);
+              CPPUNIT_ASSERT((*digiIt).isValid());
               CPPUNIT_ASSERT((*digiIt).getQuality()==3);
-              CPPUNIT_ASSERT((*digiIt).getAccel()==0);
-              CPPUNIT_ASSERT((*digiIt).getPattern()==1);
-              CPPUNIT_ASSERT((*digiIt).getKwire()==16);
-              CPPUNIT_ASSERT((*digiIt).getBx()==4);
+              CPPUNIT_ASSERT((*digiIt).getAccelerator()==0);
+              CPPUNIT_ASSERT((*digiIt).getCollisionB()==1);
+              CPPUNIT_ASSERT((*digiIt).getKeyWG()==16);
+              CPPUNIT_ASSERT((*digiIt).getBX()==4);
               CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
 
- printf("CSC ALCT - endcap station ring csc plane valid quality accel pattern wire bx track: %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getValid(),(*digiIt).getQuality(),(*digiIt).getAccel(),(*digiIt).getPattern(),(*digiIt).getKwire(),(*digiIt).getBx(),(*digiIt).getTrknmb());
+ printf("CSC ALCT - endcap station ring csc plane valid quality accel pattern wire bx track: %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).isValid(),(*digiIt).getQuality(),(*digiIt).getAccelerator(),(*digiIt).getCollisionB(),(*digiIt).getKeyWG(),(*digiIt).getBX(),(*digiIt).getTrknmb());
     }// for digis in layer
    }// end of for (detUnitIt=...
     printf("CSC ALCT count:  %3d \n", count);
@@ -495,17 +495,17 @@ void testCSCDigis::readCSCCLCTDigi(CSCCLCTDigiCollection & collection){
               ++digiIt){
     
               count++;
-              CPPUNIT_ASSERT((*digiIt).getValid()==1);
+              CPPUNIT_ASSERT((*digiIt).isValid());
               CPPUNIT_ASSERT((*digiIt).getQuality()==3);
               CPPUNIT_ASSERT((*digiIt).getPattern()==2);
-              CPPUNIT_ASSERT((*digiIt).getStriptype()==1);
+              CPPUNIT_ASSERT((*digiIt).getStripType()==1);
               CPPUNIT_ASSERT((*digiIt).getBend()==0);
               CPPUNIT_ASSERT((*digiIt).getStrip()==16);
-              CPPUNIT_ASSERT((*digiIt).getCfeb()==5);              
-              CPPUNIT_ASSERT((*digiIt).getBx()==3);
+              CPPUNIT_ASSERT((*digiIt).getCFEB()==5);              
+              CPPUNIT_ASSERT((*digiIt).getBX()==3);
               CPPUNIT_ASSERT((*digiIt).getTrknmb()==1);
 
- printf("CSC CLCT - endcap station ring csc plane valid quality pattern striptype bend strip cfeb bx tracknmb %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getValid(),(*digiIt).getQuality(),(*digiIt).getPattern(),(*digiIt).getStriptype(),(*digiIt).getBend(),(*digiIt).getStrip(),(*digiIt).getCfeb(),(*digiIt).getBx(), (*digiIt).getTrknmb());
+ printf("CSC CLCT - endcap station ring csc plane valid quality pattern striptype bend strip cfeb bx tracknmb %3d %3d %3d %3d %3d %3d  %3d %3d %3d %3d %3d %3d %3d %3d\n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).isValid(),(*digiIt).getQuality(),(*digiIt).getPattern(),(*digiIt).getStripType(),(*digiIt).getBend(),(*digiIt).getStrip(),(*digiIt).getCFEB(),(*digiIt).getBX(), (*digiIt).getTrknmb());
     
     }// for digis in layer
    }// end of for (detUnitIt=...
