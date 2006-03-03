@@ -3,8 +3,8 @@
  * Test suit for CSCDigi.
  * Based on testDTDigis.cc
  *
- * $Date:$
- * $Revision:$
+ * $Date: 2006/03/03 17:56:39 $
+ * $Revision: 1.15 $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  * \author A. Tumanov, Rice U.
  */
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.14 2006/03/03 01:03:09 teren Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.15 2006/03/03 17:56:39 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -322,13 +322,13 @@ void testCSCDigis::readCSCCorrLCTDigi(CSCCorrelatedLCTDigiCollection & collectio
 	  digiIt != range.second; digiIt++)
 	{
 	  ++count;
-	  CPPUNIT_ASSERT(digiIt->getValid() == 1);
+	  CPPUNIT_ASSERT(digiIt->isValid() == 1);
 	  CPPUNIT_ASSERT(digiIt->getQuality() == 15);
 	  CPPUNIT_ASSERT(digiIt->getCLCTPattern() == 2);
 	  CPPUNIT_ASSERT(digiIt->getStrip() == 16);
-	  CPPUNIT_ASSERT(digiIt->getKwire() == 10);
+	  CPPUNIT_ASSERT(digiIt->getKeyWG() == 10);
 	  CPPUNIT_ASSERT(digiIt->getBend() == 1);
-	  CPPUNIT_ASSERT(digiIt->getBx() == 0);
+	  CPPUNIT_ASSERT(digiIt->getBX() == 0);
 	  
 	  std::cout << "CSC Correlated LCT - endcap station ring csc layer LCT# Quality: " << id.endcap() << " " << id.station()
 		    << " " << id.ring() << " " << id.chamber() << " " << id.layer() << " " << digiIt->getTrknmb() << " " 
