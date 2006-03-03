@@ -4,15 +4,15 @@
  * Based on testDTDigis.cc
  *
  * $Date:$
- * $Revision:$
+ * $Revision: $
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
- * \author M.Schmitt,    Northwestern (for CSCComparatorDigi, CSCStripDigi)
+ * \author M. Schmitt,    Northwestern (for CSCComparatorDigi, CSCStripDigi)
+ * \author A. Tumanov, Rice U.
  */
 
-
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.12 2006/03/01 13:26:54 tumanov Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.13 2006/03/03 00:59:56 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
