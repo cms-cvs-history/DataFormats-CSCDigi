@@ -4,7 +4,7 @@
  * Based on testDTDigis.cc
  *
  * $Date:$
- * $Revision: $
+ * $Revision:$
  *
  * \author N. Terentiev, CMU (for CSCWireDigi, CSCRPCDigi, 
  *                                CSCALCTDigi, CSCCLCTDigi)
@@ -12,7 +12,7 @@
  * \author A. Tumanov, Rice U.
  */
 
-static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.13 2006/03/03 00:59:56 teren Exp $";
+static const char CVSId[] = "$Id: testCSCDigis.cc,v 1.14 2006/03/03 01:03:09 teren Exp $";
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <DataFormats/MuonDetId/interface/CSCDetId.h>
@@ -194,7 +194,7 @@ void testCSCDigis::fillCSCRPCDigi(CSCRPCDigiCollection & collection){
 	    CSCDetId detid(endcp,stn,rng,csc,pln);
    
 	    std::vector<CSCRPCDigi> digivec;
-	    for (int i=10; i<11; ++i){
+	    for (int i=5; i<6; ++i){
 	      CSCRPCDigi::PackedDigiType pd;
 	      pd.rpc=i;
 	      pd.bxn=1;
@@ -227,7 +227,7 @@ void testCSCDigis::fillCSCALCTDigi(CSCALCTDigiCollection & collection){
            pd.valid=1;
            pd.quality=3;
            pd.accel=0;
-           pd.pattern=1;
+           pd.patternb=1;
            pd.keywire=16;
            pd.bx=4;
            pd.trknmb=1;
@@ -391,6 +391,7 @@ void testCSCDigis::readCSCComparatorDigi(CSCComparatorDigiCollection & collectio
 void testCSCDigis::readCSCStripDigi(CSCStripDigiCollection & collection){
 
   int count=0;
+
   CSCStripDigiCollection::DigiRangeIterator detUnitIt;
   for (detUnitIt=collection.begin();
        detUnitIt!=collection.end();
@@ -437,11 +438,10 @@ void testCSCDigis::readCSCRPCDigi(CSCRPCDigiCollection & collection){
               ++digiIt){
  
               count++;
-              CPPUNIT_ASSERT((*digiIt).getRpc()==3);
-              CPPUNIT_ASSERT((*digiIt).getBXN()==4);
+              CPPUNIT_ASSERT((*digiIt).getRpc()==5);
+              CPPUNIT_ASSERT((*digiIt).getBXN()==1);
 
-	      printf("RPC digi - endcap station ring csc plane: %3d %3d %3d %3d %3d %3d  %4d \n",
-		     id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getRpc(),(*digiIt).getBXN());
+	      printf("RPC digi - endcap station ring csc plane: %3d %3d %3d %3d %3d %3d  %4d \n",id.endcap(),id.station(),id.ring(),id.chamber(),id.layer(),(*digiIt).getRpc(),(*digiIt).getBXN());
    
     }// for digis in layer
    }// end of for (detUnitIt=...
