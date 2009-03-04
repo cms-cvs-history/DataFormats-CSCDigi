@@ -1,3 +1,4 @@
+<Flags CppDefines="DEBUG=1">
 <use name=FWCore/Framework>
 <use name=DataFormats/CSCDigi>
 <use name=DataFormats/DetId>
