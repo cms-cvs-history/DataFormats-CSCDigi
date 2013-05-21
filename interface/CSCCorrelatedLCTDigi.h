@@ -5,8 +5,8 @@
  *
  * Digi for Correlated LCT trigger primitives. 
  *
- * $Date: 2009/03/25 13:13:11 $
- * $Revision: 1.16 $
+ * $Date: 2011/02/02 13:27:20 $
+ * $Revision: 1.17 $
  *
  * \author L. Gray, UF
  */
@@ -86,6 +86,16 @@ class CSCCorrelatedLCTDigi
   /// set quality code
   void setQuality(unsigned int q) {quality=q;}
 
+  //------- GEM matching extras ---------
+  /// if has any sort of associated GEM pad
+  bool hasGEM() const {return gemDPhi > -9. && gemDPhi < 9.;}
+
+  /// LCT phi - gem pad phi for ME11
+  float getGEMDPhi() const {return gemDPhi;}
+
+  /// set gem pad deltaPhi for ME11
+  void setGEMDPhi(const float dphi) {gemDPhi = dphi;}
+
  private:
   uint16_t trknmb;
   uint16_t valid;
@@ -99,6 +109,7 @@ class CSCCorrelatedLCTDigi
   uint16_t bx0; 
   uint16_t syncErr;
   uint16_t cscID;
+  float gemDPhi;
 };
 
 std::ostream & operator<<(std::ostream & o, const CSCCorrelatedLCTDigi& digi);
